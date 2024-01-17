@@ -1,0 +1,50 @@
+{% extends '_base.html' %}
+{% load static %}
+
+
+{% block title %}
+ Todo App
+{% endblock %}
+
+{% block content %}
+
+    <div class="container m-5 p-2 rounded mx-auto bg-light shadow">
+    <div class="text-lg-right">
+        <button><a href="{% url 'accounts:login' %}">Logout /</a></button>
+        <button><a href="#">{{request.user}}</a></button>
+    </div>
+    <!-- App title section -->
+    <div class="row m-1 p-4">
+        <div class="col">
+            <div class="p-1 h1 text-primary text-center mx-auto display-inline-block">
+                <i class="fa fa-check bg-primary text-white rounded p-2"></i>
+                <u>My Todo-s</u>
+            </div>
+        </div>
+    </div>
+    <!-- Create todo section -->
+    <div class="row m-1 p-3">
+        <div class="col col-11 mx-auto">
+           <form method="post">{% csrf_token %}
+            <div class="row bg-white rounded shadow-sm p-2 add-todo-wrapper align-items-center justify-content-center">
+
+                    <div class="col">
+
+                       <input type="text" class="form-control form-control-lg " name="Title" value="{{ form.Title.value }}">
+                    </div>
+                    <div class="form-check p-4">
+                           <input type="checkbox" class="form-check-input" name="Completed" {% if form.Completed.value %} checked  {% endif %}value="{{ form.Title.value }}">
+                    </div>
+                     <div class="col-auto px-0 mx-0 mr-2">
+                          <button type="submit" class="btn btn-primary">Save</button>
+                     </div>
+
+            </div>
+           </form>
+        </div>
+    </div>
+    <div class="p-2 mx-4 border-black-25 border-bottom"></div>
+
+
+</div>
+{% endblock %}
