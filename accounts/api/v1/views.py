@@ -1,27 +1,18 @@
-from django.views.static import serve
-from rest_framework.generics import GenericAPIView
-from .serializer import AccountSerializers,Loginserializer
-from rest_framework import viewsets
-from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView, GenericAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, UpdateAPIView, GenericAPIView
 from .serializer import Loginserializer, RegisterSerializer, ProfileSerializer, ChangePasswordSerializer
 from ...models import User, UserDetail
-from rest_framework.decorators import action
-from django.contrib.auth import login, logout
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import permissions
 from rest_framework import status
 from django.contrib.auth import login, logout
 from ...models import User
 from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializer import TokenJwtSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from mail_templated import EmailMessage, send_mail
+from mail_templated import EmailMessage
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utily import EmailThreading
 
@@ -93,7 +84,7 @@ class LogoutApi(APIView):
 
 class TokenViewJwt(TokenObtainPairView):
     serializer_class = TokenJwtSerializer
-    
+
 class ProfileApiView(RetrieveUpdateAPIView):
     """
         this is for view detail of user and update  user information

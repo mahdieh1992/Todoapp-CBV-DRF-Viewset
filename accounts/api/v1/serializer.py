@@ -1,11 +1,7 @@
 from rest_framework import serializers
-from ...models import User
-from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from django.contrib.auth import authenticate
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from ...models import User, UserDetail
-from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import authenticate
 from django.contrib.auth import password_validation as passvalidate
 from django.core.exceptions import ValidationError
