@@ -1,18 +1,14 @@
 from rest_framework import serializers
-<<<<<<< HEAD
 from ...models import User
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-=======
 from ...models import User, UserDetail
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import authenticate
 from django.contrib.auth import password_validation as passvalidate
 from django.core.exceptions import ValidationError
->>>>>>> master
-
 
 class AccountSerializers(serializers.ModelSerializer):
     """
@@ -67,14 +63,11 @@ class Loginserializer(serializers.Serializer):
         data['user'] = user
         return data
 
-
-<<<<<<< HEAD
 class TokenJwtSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         validated_data = super().validate(attrs)
         validated_data['email'] = self.user.email
         return validated_data
-=======
 class RegisterSerializer(serializers.ModelSerializer):
     confirmPassword = serializers.CharField(max_length=255, style={'input_type': 'password'})
     password = serializers.CharField(max_length=255, style={'input_type': 'password'})
@@ -124,5 +117,3 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError(list(error.messages))
 
         return data
-
->>>>>>> master

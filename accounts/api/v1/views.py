@@ -1,21 +1,17 @@
-<<<<<<< HEAD
 from django.views.static import serve
 from rest_framework.generics import GenericAPIView
-from .serializer import AccountSerializers, Loginserializer
-=======
+from .serializer import AccountSerializers,Loginserializer
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, UpdateAPIView, GenericAPIView
-from .serializer import LoginUserSerializers, RegisterSerializer, ProfileSerializer, ChangePasswordSerializer
+from .serializer import Loginserializer, RegisterSerializer, ProfileSerializer, ChangePasswordSerializer
 from ...models import User, UserDetail
 from rest_framework.decorators import action
 from django.contrib.auth import login, logout
->>>>>>> master
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import permissions
 from rest_framework import status
-<<<<<<< HEAD
 from django.contrib.auth import login, logout
 from ...models import User
 from rest_framework.authtoken.models import Token
@@ -23,20 +19,18 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializer import TokenJwtSerializer
-=======
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from mail_templated import EmailMessage, send_mail
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utily import EmailThreading
->>>>>>> master
 
 
 class RegistrationGAPIView(GenericAPIView):
     """
         this is Register user and show data According to desired field
     """
-    serializer_class = AccountSerializers
+    serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
         """
@@ -44,15 +38,31 @@ class RegistrationGAPIView(GenericAPIView):
         """
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
             email = serializer.validated_data['email']
-<<<<<<< HEAD
-
-            data = {
-                'email': email
-            }
-            return Response(data=data, status=status.HTTP_201_CREATED)
+            password = serializer.validated_data['password']
+            user = User.objects.create(email=email, is_staff=True, is_superuser=True)
+            user.set_password(password)
+            user.save()
+            # find user trgisterd for create token
+            user_obj = get_object_or_404(User, email=email)
+            # create token for user registerd
+            tokecreate = self.get_tokens_for_user(user_obj)
+            # send email contain token to new userr
+            emailuser = EmailMessage('email/Activation.tp1', {'token': tokecreate}, 'mohamadimahdieh70@gmil.com',
+                                     [email])
+            # send email with threading for increase speed
+            email_object = EmailThreading(emailuser)
+            email_object.start()
+            return Response('Register user is successfully so for  finally register we sended a code for user',
+                            status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_tokens_for_user(self, user):
+        """
+            function create token manually with jwt
+        """
+        token = RefreshToken.for_user(user)
+        return str(token)
 
 
 class LoginApiView(GenericAPIView):
@@ -83,35 +93,7 @@ class LogoutApi(APIView):
 
 class TokenViewJwt(TokenObtainPairView):
     serializer_class = TokenJwtSerializer
-
-
-=======
-            password = serializer.validated_data['password']
-            user = User.objects.create(email=email, is_staff=True, is_superuser=True)
-            user.set_password(password)
-            user.save()
-            # find user trgisterd for create token
-            user_obj = get_object_or_404(User, email=email)
-            # create token for user registerd
-            tokecreate = self.get_tokens_for_user(user_obj)
-            # send email contain token to new userr
-            emailuser = EmailMessage('email/Activation.tp1', {'token': tokecreate}, 'mohamadimahdieh70@gmil.com',
-                                     [email])
-            # send email with threading for increase speed
-            email_object = EmailThreading(emailuser)
-            email_object.start()
-            return Response('Register user is successfully so for  finally register we sended a code for user',
-                            status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def get_tokens_for_user(self, user):
-        """
-            function create token manually with jwt
-        """
-        token = RefreshToken.for_user(user)
-        return str(token)
-
-
+    
 class ProfileApiView(RetrieveUpdateAPIView):
     """
         this is for view detail of user and update  user information
@@ -158,4 +140,3 @@ class SendMailApi(APIView):
         emailthread = EmailThreading(email)
         emailthread.start()
         return Response('Email send successfully', status=status.HTTP_200_OK)
->>>>>>> master
