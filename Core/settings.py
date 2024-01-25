@@ -39,12 +39,11 @@ INSTALLED_APPS = [
     'accounts',
     'Todo',
     'rest_framework',
-    'rest_framework_simplejwt',
     'django_filters',
     'drf_yasg',
     'rest_framework.authtoken',
-    'rest_framework_simplejwt'
-    'mail_templated'
+    'rest_framework_simplejwt',
+    'mail_templated',
 ]
 
 MIDDLEWARE = [
