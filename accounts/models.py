@@ -17,6 +17,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     ExpireDate = models.DateField(default=date_current)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    is_verified = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
