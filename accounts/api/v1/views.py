@@ -1,5 +1,7 @@
 from rest_framework.generics import RetrieveUpdateAPIView, UpdateAPIView, GenericAPIView
-from .serializer import Loginserializer, RegisterSerializer, ProfileSerializer, ChangePasswordSerializer
+
+from Core import settings
+from .serializer import Loginserializer, RegisterSerializer, ProfileSerializer, ChangePasswordSerializer,ResendVerifySerializer
 from ...models import User, UserDetail
 from rest_framework.response import Response
 from rest_framework import permissions
@@ -15,6 +17,7 @@ from django.shortcuts import get_object_or_404
 from mail_templated import EmailMessage
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utily import EmailThreading
+import jwt
 
 
 class RegistrationGAPIView(GenericAPIView):
@@ -39,7 +42,7 @@ class RegistrationGAPIView(GenericAPIView):
             # create token for user registerd
             tokecreate = self.get_tokens_for_user(user_obj)
             # send email contain token to new userr
-            emailuser = EmailMessage('email/Activation.tp1', {'token': tokecreate}, 'mohamadimahdieh70@gmil.com',
+            emailuser = EmailMessage('email/Confirm.tp1', {'token': tokecreate}, 'mohamadimahdieh70@gmil.com',
                                      [email])
             # send email with threading for increase speed
             email_object = EmailThreading(emailuser)
@@ -52,8 +55,53 @@ class RegistrationGAPIView(GenericAPIView):
         """
             function create token manually with jwt
         """
-        token = RefreshToken.for_user(user)
-        return str(token)
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
+
+
+class SendVerifyUserApi(APIView):
+    """
+        this is to confirm registration user
+    """
+    def get(self,request,token,*args,**kwargs):
+        try:
+            # try decode toke to get userid
+            Payload = jwt.decode(token, key=settings.SECRET_KEY, algorithms=['HS256'])
+            user_object = get_object_or_404(User, id=Payload['user_id'])
+            if user_object.is_verified:
+                return Response({'detail': 'user is_verified'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                user_object.is_verified = True
+                user_object.save()
+                return Response({'detail': 'user is_verified successfully'}, status=status.HTTP_200_OK)
+        # except if token improperly
+        except jwt.exceptions.DecodeError as e:
+            return Response({'Error': 'invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        #  except while the toke expired
+        except jwt.exceptions.ExpiredSignatureError as e:
+            return Response({'Error': 'token expired'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ResendVerifyUserApi(GenericAPIView):
+    serializer_class = ResendVerifySerializer
+
+    def post(self,request):
+        serializer=self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user=serializer.validated_data['user']
+        # receate token and send to emails user to confirm
+        token = self.get_tokens_for_user(user)
+        email = EmailMessage('email/Confirm.tp1',{'token':token}, 'mohamadimahdieh70@gmil.com',[user.email])
+        emailthread=EmailThreading(email)
+        emailthread.start()
+        return Response({'detail':'we sending a confirm code your email'},status=status.HTTP_200_OK)
+
+    def get_tokens_for_user(self, user):
+        """
+            function create token manually with jwt
+        """
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
 
 
 class LoginApiView(GenericAPIView):
@@ -84,6 +132,7 @@ class LogoutApi(APIView):
 
 class TokenViewJwt(TokenObtainPairView):
     serializer_class = TokenJwtSerializer
+
 
 class ProfileApiView(RetrieveUpdateAPIView):
     """
@@ -117,12 +166,6 @@ class ChangePasswordApi(GenericAPIView):
             object.save()
             return Response({'data': 'Change pass word successfully'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ActivationUserApi(APIView):
-    def get(self):
-        pass
-
 
 class SendMailApi(APIView):
     def get(self, request, *args, **kwargs):
