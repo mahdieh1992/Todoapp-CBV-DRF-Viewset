@@ -83,6 +83,9 @@ class SendVerifyUserApi(APIView):
 
 
 class ResendVerifyUserApi(GenericAPIView):
+    """
+        if token expired we resend a new token to user for confirm account
+    """
     serializer_class = ResendVerifySerializer
 
     def post(self,request):
