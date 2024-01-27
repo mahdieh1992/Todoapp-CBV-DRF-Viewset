@@ -7,6 +7,23 @@ from django.contrib.auth import password_validation as passvalidate
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 
+
+def EmailValid(func):
+    def validate(self, data):
+
+        email = data.get('Email')
+        try:
+            user = get_object_or_404(User, email=email)
+            func(self, data)
+
+        except ValidationError as e:
+            raise serializers.ValidationError({'user': e.messages}, code='User_not_exists')
+        data['user'] = user
+        return data
+
+    return validate
+
+
 class AccountSerializers(serializers.ModelSerializer):
     """
         this is serializer model for Register user
@@ -90,16 +107,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ResendVerifySerializer(serializers.Serializer):
     Email = serializers.CharField()
 
+    @EmailValid
     def validate(self, data):
         email = data.get('Email')
-        try:
-            user =get_object_or_404(User,email=email)
-            if user.is_verified:
-                raise serializers.ValidationError({'detail':'Dear user your account is verified'}, code='ResendVerify')
-        except ValidationError as e:
-            raise serializers.ValidationError({'user':e.messages}, code='User_not_exists')
-        data['user'] = user
-        return data
+        user = get_object_or_404(User, email=email)
+        if user.is_verified:
+            raise serializers.ValidationError({'detail': 'Dear user your account is verified'}, code='ResendVerify')
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -130,5 +143,27 @@ class ChangePasswordSerializer(serializers.Serializer):
             passvalidate.validate_password(password=newpassword, user=user)
         except ValidationError as error:
             raise serializers.ValidationError(list(error.messages))
+
+        return data
+
+
+class SendResetPasswordSerializer(serializers.Serializer):
+    Email = serializers.CharField(max_length=255)
+
+    @EmailValid
+    def validate(self, data):
+        pass
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    NewPassword = serializers.CharField(max_length=200)
+
+    def validate(self, data):
+        password = data.get('NewPassword')
+        user = self.context['request'].user
+        try:
+            validate_password(password, user=user)
+        except ValidationError as e:
+            raise ValidationError({'detail': list(e.messages)}, code='Short_password')
 
         return data
