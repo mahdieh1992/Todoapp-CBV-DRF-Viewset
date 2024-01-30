@@ -11,14 +11,16 @@ from django.shortcuts import get_object_or_404
 def EmailValid(func):
     def validate(self, data):
 
-        email = data.get('Email')
+        email = data.get("Email")
         try:
             user = get_object_or_404(User, email=email)
             func(self, data)
 
         except ValidationError as e:
-            raise serializers.ValidationError({'user': e.messages}, code='User_not_exists')
-        data['user'] = user
+            raise serializers.ValidationError(
+                {"user": e.messages}, code="User_not_exists"
+            )
+        data["user"] = user
         return data
 
     return validate
@@ -26,81 +28,101 @@ def EmailValid(func):
 
 class AccountSerializers(serializers.ModelSerializer):
     """
-        this is serializer model for Register user
+    this is serializer model for Register user
     """
-    password = serializers.CharField(max_length=200, write_only=True, style={'input_type': 'password'})
-    ConfirmPassword = serializers.CharField(max_length=200, write_only=True, style={'input_type': 'password'})
+
+    password = serializers.CharField(
+        max_length=200, write_only=True, style={"input_type": "password"}
+    )
+    ConfirmPassword = serializers.CharField(
+        max_length=200, write_only=True, style={"input_type": "password"}
+    )
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'ConfirmPassword']
+        fields = ["email", "password", "ConfirmPassword"]
 
     def validate(self, attrs):
         """
-            evaluate input data according match password and confirmPassword
-            evaluate password according The password should not be short
+        evaluate input data according match password and confirmPassword
+        evaluate password according The password should not be short
         """
-        password = attrs.get('password')
-        ConfirmPassword = attrs.get('ConfirmPassword')
+        password = attrs.get("password")
+        ConfirmPassword = attrs.get("ConfirmPassword")
         if password != ConfirmPassword:
-            raise ValidationError({'password': "Doesn't match password and confirmpassword"}, code="password_not_match")
+            raise ValidationError(
+                {"password": "Doesn't match password and confirmpassword"},
+                code="password_not_match",
+            )
         try:
             validate_password(password)
         except ValidationError as e:
-            raise ValidationError({'password': tuple(e.messages)}, code='password_too_short')
+            raise ValidationError(
+                {"password": tuple(e.messages)}, code="password_too_short"
+            )
 
         return super(AccountSerializers, self).validate(attrs)
 
     def create(self, validated_data):
         """
-             save data according desired items
+        save data according desired items
         """
-        validated_data.pop('ConfirmPassword')
+        validated_data.pop("ConfirmPassword")
         return User.objects.create(**validated_data)
 
 
 class Loginserializer(serializers.Serializer):
     email = serializers.EmailField()
-    password = serializers.CharField(max_length=200, write_only=True, style={'input_type': 'password'})
+    password = serializers.CharField(
+        max_length=200, write_only=True, style={"input_type": "password"}
+    )
 
     def validate(self, data):
-        email = data.get('email')
-        password = data.get('password')
+        email = data.get("email")
+        password = data.get("password")
         if email and password:
-            user = authenticate(request=self.context.get('request'), email=email, password=password)
+            user = authenticate(
+                request=self.context.get("request"), email=email, password=password
+            )
             if not user:
-                raise serializers.ValidationError('wrong Email or password', code='Email_not_exists')
+                raise serializers.ValidationError(
+                    "wrong Email or password", code="Email_not_exists"
+                )
         else:
-            raise serializers.ValidationError({'user': 'must be include email and password'},
-                                              code='required_email_password')
+            raise serializers.ValidationError(
+                {"user": "must be include email and password"},
+                code="required_email_password",
+            )
 
-        data['user'] = user
+        data["user"] = user
         return data
 
 
 class TokenJwtSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         validated_data = super().validate(attrs)
-        validated_data['email'] = self.user.email
+        validated_data["email"] = self.user.email
         return validated_data
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    confirmPassword = serializers.CharField(max_length=255, style={'input_type': 'password'})
-    password = serializers.CharField(max_length=255, style={'input_type': 'password'})
+    confirmPassword = serializers.CharField(
+        max_length=255, style={"input_type": "password"}
+    )
+    password = serializers.CharField(max_length=255, style={"input_type": "password"})
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'confirmPassword']
+        fields = ["email", "password", "confirmPassword"]
 
     def validate(self, data):
-        password = data.get('password')
-        confirmPassword = data.get('confirmPassword')
-        email = data.get('email')
+        password = data.get("password")
+        confirmPassword = data.get("confirmPassword")
+        email = data.get("email")
         if password != confirmPassword:
-            raise serializers.ValidationError('Not match password and Confirm password')
+            raise serializers.ValidationError("Not match password and Confirm password")
         if User.objects.filter(email=email, password=password).exists():
-            raise serializers.ValidationError('User is exists')
+            raise serializers.ValidationError("User is exists")
         return data
 
 
@@ -109,18 +131,28 @@ class ResendVerifySerializer(serializers.Serializer):
 
     @EmailValid
     def validate(self, data):
-        email = data.get('Email')
+        email = data.get("Email")
         user = get_object_or_404(User, email=email)
         if user.is_verified:
-            raise serializers.ValidationError({'detail': 'Dear user your account is verified'}, code='ResendVerify')
+            raise serializers.ValidationError(
+                {"detail": "Dear user your account is verified"}, code="ResendVerify"
+            )
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    email = serializers.CharField(read_only=True, source='User.email')
+    email = serializers.CharField(read_only=True, source="User.email")
 
     class Meta:
         model = UserDetail
-        fields = ['User_id', 'email', 'FirstName', 'LastName', 'Gender', 'NationalCode', 'Mobile']
+        fields = [
+            "User_id",
+            "email",
+            "FirstName",
+            "LastName",
+            "Gender",
+            "NationalCode",
+            "Mobile",
+        ]
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -130,15 +162,17 @@ class ChangePasswordSerializer(serializers.Serializer):
 
     def validate(self, data):
 
-        user = self.context['request'].user
-        oldpassword = data.get('OldPassword')
-        newpassword = data.get('NewPassword')
-        confirmpassword = data.get('ConfirmPassword')
+        user = self.context["request"].user
+        oldpassword = data.get("OldPassword")
+        newpassword = data.get("NewPassword")
+        confirmpassword = data.get("ConfirmPassword")
 
         if not user.check_password(oldpassword):
-            raise serializers.ValidationError('wrong Password', code='wrong password')
+            raise serializers.ValidationError("wrong Password", code="wrong password")
         if newpassword != confirmpassword:
-            raise serializers.ValidationError('Not match NewPassword and ConfirmPassword', code='ChangePassword')
+            raise serializers.ValidationError(
+                "Not match NewPassword and ConfirmPassword", code="ChangePassword"
+            )
         try:
             passvalidate.validate_password(password=newpassword, user=user)
         except ValidationError as error:
@@ -159,11 +193,11 @@ class ResetPasswordSerializer(serializers.Serializer):
     NewPassword = serializers.CharField(max_length=200)
 
     def validate(self, data):
-        password = data.get('NewPassword')
-        user = self.context['request'].user
+        password = data.get("NewPassword")
+        user = self.context["request"].user
         try:
             validate_password(password, user=user)
         except ValidationError as e:
-            raise ValidationError({'detail': list(e.messages)}, code='Short_password')
+            raise ValidationError({"detail": list(e.messages)}, code="Short_password")
 
         return data
