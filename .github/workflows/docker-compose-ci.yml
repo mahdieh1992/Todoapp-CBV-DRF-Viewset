@@ -17,4 +17,4 @@ jobs:
     - name: Build the Docker image
       run: docker compose up -d
     - name: assert pytest
-      run:  docker-compose exec web sh -c "pytest ."
+      run: docker-compose exec web sh -c "pytest ."
