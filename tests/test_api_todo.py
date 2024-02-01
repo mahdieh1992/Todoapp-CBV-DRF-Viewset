@@ -1,6 +1,6 @@
 import pytest
 from rest_framework.test import APIClient
-from django.urls import reverse,reverse_lazy,resolve
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from Todo.models import Todo
 
@@ -16,14 +16,14 @@ def created_user():
     usermodel = get_user_model()
     user = usermodel.objects.create_user(email='test@gmail.com', password='12345')
     yield user
-    print('ok')
+    print('user create is sucssesfuly')
 
 
 @pytest.fixture
 def force_login(api_client, created_user):
     user = created_user
     api_client.force_authenticate(user=user)
-    return api_client, user
+    return api_client,user
 
 
 @pytest.fixture
@@ -48,8 +48,7 @@ class TestApiTodo:
             'Is_active':True,
             'Completed':True
         }
-        client=api_client
-        response = client.put(f'/Todo/api/v1/TodoDetail/{Todo.pk}',data)
+        response = api_client.put(f'/Todo/api/v1/TodoDetail/{Todo.pk}',data)
         assert response.status_code == 404
 
     def test_api_todo_put(self, api_client, created_todo):
@@ -59,14 +58,12 @@ class TestApiTodo:
             'Is_active':True,
             'Completed':True
         }
-        client=api_client
         url=reverse(f'Todo:TodoApi:TodoDetail',kwargs={'pk':created_todo.pk})
-        response = client.put(url,data)
+        response = api_client.put(url,data)
         assert response.status_code == 200
 
     def test_api_todo_delete(self, api_client, created_todo):
-        client=api_client
         url=reverse(f'Todo:TodoApi:TodoDetail',kwargs={'pk':created_todo.pk})
-        response = client.delete(url)
+        response = api_client.delete(url)
         assert response.status_code == 204
 

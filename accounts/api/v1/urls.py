@@ -24,7 +24,6 @@ app_name = "AccountApi"
 router = DefaultRouter()
 
 urlpatterns = [
-    path("account/register/", RegistrationGAPIView.as_view(), name="register"),
     path("account/confirm/<str:token>", SendVerifyUserApi.as_view(), name="confirm"),
     path("account/ResendVerify/", ResendVerifyUserApi.as_view(), name="ResendVerify"),
     path("account/profile/", ProfileApiView.as_view(), name="profile"),

@@ -39,7 +39,7 @@ class UserDetail(models.Model):
     Mobile = models.CharField(max_length=11)
 
     def __str__(self):
-        return f"{self.User_id}"
+        return f"{self.User_id.email} "
 
 
 @receiver(post_save, sender=User)

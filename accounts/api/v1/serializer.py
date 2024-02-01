@@ -140,13 +140,12 @@ class ResendVerifySerializer(serializers.Serializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    email = serializers.CharField(read_only=True, source="User.email")
+    User_id=serializers.CharField(read_only=True)
 
     class Meta:
         model = UserDetail
         fields = [
             "User_id",
-            "email",
             "FirstName",
             "LastName",
             "Gender",

@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "mail_templated",
     "djoser",
+    "faker"
+
+
 ]
 
 MIDDLEWARE = [
