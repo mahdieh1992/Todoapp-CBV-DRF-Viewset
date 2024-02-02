@@ -1,5 +1,4 @@
-name: T
-
+name: django todo test
 on:
   push:
     branches: [ "main" ]
@@ -15,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: build doker
-      run: docker-compose up 
+      run: docker-compose up --build
     - name: Run test
       run: docker exec web sh -c "pytest ."
   
