@@ -17,4 +17,4 @@ jobs:
     - name: setup docker
       run: docker-compose up -d
     - name: Run test
-      run: docker run web sh -c "flake8 ."
+      run: docker exec web sh -c "flake8 ."
