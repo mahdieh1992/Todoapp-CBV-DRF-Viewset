@@ -27,7 +27,10 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "password",
+                    models.CharField(max_length=128, verbose_name="password"),
+                ),
                 (
                     "last_login",
                     models.DateTimeField(
@@ -49,7 +52,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("Isdeleted", models.BooleanField(default=False)),
-                ("ExpireDate", models.DateField(default=datetime.date(2026, 1, 7))),
+                (
+                    "ExpireDate",
+                    models.DateField(default=datetime.date(2026, 1, 7)),
+                ),
                 ("is_staff", models.BooleanField(default=False)),
                 ("is_active", models.BooleanField(default=True)),
                 (
@@ -93,11 +99,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "FirstName",
-                    models.CharField(max_length=250, verbose_name="First_name"),
+                    models.CharField(
+                        max_length=250, verbose_name="First_name"
+                    ),
                 ),
                 (
                     "LastName",
-                    models.CharField(max_length=250, verbose_name="Last_name"),
+                    models.CharField(
+                        max_length=250, verbose_name="Last_name"
+                    ),
                 ),
                 ("Gender", models.BooleanField(default=False)),
                 ("NationalCode", models.CharField(max_length=10)),

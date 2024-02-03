@@ -1,4 +1,7 @@
-from rest_framework.generics import RetrieveUpdateAPIView, UpdateAPIView, GenericAPIView
+from rest_framework.generics import (
+    RetrieveUpdateAPIView,
+    GenericAPIView,
+)
 
 from Core import settings
 from .serializer import (
@@ -10,7 +13,7 @@ from .serializer import (
     ResendVerifySerializer,
     ResetPasswordSerializer,
 )
-from ...models import User, UserDetail
+from ...models import UserDetail
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework import status
@@ -51,7 +54,9 @@ class RegistrationGAPIView(GenericAPIView):
         if serializer.is_valid():
             email = serializer.validated_data["email"]
             password = serializer.validated_data["password"]
-            user = User.objects.create(email=email, is_staff=True, is_superuser=True)
+            user = User.objects.create(
+                email=email, is_staff=True, is_superuser=True
+            )
             user.set_password(password)
             user.save()
             # find user trgisterd for create token
@@ -69,7 +74,8 @@ class RegistrationGAPIView(GenericAPIView):
             email_object = EmailThreading(emailuser)
             email_object.start()
             return Response(
-                "Register user is successfully so for  finally register we sended a code for user",
+                "Register user is successfully "
+                "so for finally register we send a code for user",
                 status=status.HTTP_200_OK,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -83,11 +89,14 @@ class SendVerifyUserApi(APIView):
     def get(self, request, token, *args, **kwargs):
         try:
             # try decode toke to get userid
-            Payload = jwt.decode(token, key=settings.SECRET_KEY, algorithms=["HS256"])
+            Payload = jwt.decode(
+                token, key=settings.SECRET_KEY, algorithms=["HS256"]
+            )
             user_object = get_object_or_404(User, id=Payload["user_id"])
             if user_object.is_verified:
                 return Response(
-                    {"detail": "user is_verified"}, status=status.HTTP_400_BAD_REQUEST
+                    {"detail": "user is_verified"},
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
             else:
                 user_object.is_verified = True
@@ -97,14 +106,16 @@ class SendVerifyUserApi(APIView):
                     status=status.HTTP_200_OK,
                 )
         # except if token improperly
-        except jwt.exceptions.DecodeError as e:
+        except jwt.exceptions.DecodeError:
             return Response(
-                {"Error": "invalid token"}, status=status.HTTP_400_BAD_REQUEST
+                {"Error": "invalid token"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         #  except while the toke expired
-        except jwt.exceptions.ExpiredSignatureError as e:
+        except jwt.exceptions.ExpiredSignatureError:
             return Response(
-                {"Error": "token expired"}, status=status.HTTP_400_BAD_REQUEST
+                {"Error": "token expired"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
 
@@ -202,7 +213,8 @@ class ChangePasswordApi(GenericAPIView):
             object.set_password(password)
             object.save()
             return Response(
-                {"data": "Change pass word successfully"}, status=status.HTTP_200_OK
+                {"data": "Change pass word successfully"},
+                status=status.HTTP_200_OK,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -249,9 +261,14 @@ class ResetPassword(GenericAPIView):
 
         try:
             # try for decode token and get userid
-            payload = jwt.decode(token, key=settings.SECRET_KEY, algorithms=["HS256"])
+            payload = jwt.decode(
+                token, key=settings.SECRET_KEY, algorithms=["HS256"]
+            )
             user = get_object_or_404(User, id=payload["user_id"])
-            # if user exists and serializer validated change password is complete
+
+            # if user exists and serializer validated
+            # change password is complete
+
             if user:
                 serializer = self.get_serializer(data=request.data)
                 if serializer.is_valid():
@@ -262,14 +279,18 @@ class ResetPassword(GenericAPIView):
                         {"detail": "change password is complete"},
                         status=status.HTTP_200_OK,
                     )
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except jwt.exceptions.DecodeError as e:
+                return Response(
+                    serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                )
+        except jwt.exceptions.DecodeError:
             return Response(
-                {"detail": "token is not valid"}, status=status.HTTP_400_BAD_REQUEST
+                {"detail": "token is not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
-        except jwt.exceptions.ExpiredSignatureError as e:
+        except jwt.exceptions.ExpiredSignatureError:
             return Response(
-                {"detail": "token is expired"}, status=status.HTTP_408_REQUEST_TIMEOUT
+                {"detail": "token is expired"},
+                status=status.HTTP_408_REQUEST_TIMEOUT,
             )
 
 

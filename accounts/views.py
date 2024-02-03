@@ -1,6 +1,5 @@
-from django.db.transaction import commit
-from django.shortcuts import render, redirect, reverse
-from django.contrib.auth import login, logout, authenticate, get_user_model
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, logout, authenticate
 from django.views.generic import View, FormView
 from .forms import LoginUserForm, RegisterUserForm
 from .models import User

@@ -4,7 +4,11 @@ from accounts.models import User
 
 class Todo(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="todouser"
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="todouser",
     )
     Title = models.TextField()
     CreateDate = models.DateField(auto_now_add=True)

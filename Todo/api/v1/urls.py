@@ -9,7 +9,11 @@ router = DefaultRouter()
 router.register("Todo", TodoListModelViewSet, basename="Todo")
 
 urlpatterns = [
-    path("TodoDetail/<int:pk>", TodoDetailGenericViewSet.as_view(), name="TodoDetail")
+    path(
+        "TodoDetail/<int:pk>",
+        TodoDetailGenericViewSet.as_view(),
+        name="TodoDetail",
+    )
 ]
 
 urlpatterns += router.urls

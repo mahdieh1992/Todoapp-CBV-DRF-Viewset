@@ -17,11 +17,21 @@ class CustomUserAdmin(UserAdmin):
         ("Field", {"fields": ("email", "password")}),
         (
             "permission",
-            {"fields": ("is_active", "is_staff", "is_superuser", "is_verified")},
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "is_verified",
+                )
+            },
         ),
     )
     add_fieldsets = (
-        ("Add_User", {"fields": ("email", "password1", "password2", "is_staff")}),
+        (
+            "Add_User",
+            {"fields": ("email", "password1", "password2", "is_staff")},
+        ),
     )
 
 

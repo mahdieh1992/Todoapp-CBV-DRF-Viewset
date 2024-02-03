@@ -4,7 +4,9 @@ from django.core.exceptions import ValidationError
 
 
 class LoginUserForm(forms.Form):
-    email = forms.CharField(widget=forms.EmailInput(attrs={"class": "form-control"}))
+    email = forms.CharField(
+        widget=forms.EmailInput(attrs={"class": "form-control"})
+    )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={"class": "form-control"})
     )

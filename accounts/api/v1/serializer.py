@@ -82,7 +82,9 @@ class Loginserializer(serializers.Serializer):
         password = data.get("password")
         if email and password:
             user = authenticate(
-                request=self.context.get("request"), email=email, password=password
+                request=self.context.get("request"),
+                email=email,
+                password=password,
             )
             if not user:
                 raise serializers.ValidationError(
@@ -109,7 +111,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     confirmPassword = serializers.CharField(
         max_length=255, style={"input_type": "password"}
     )
-    password = serializers.CharField(max_length=255, style={"input_type": "password"})
+    password = serializers.CharField(
+        max_length=255, style={"input_type": "password"}
+    )
 
     class Meta:
         model = User
@@ -120,7 +124,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         confirmPassword = data.get("confirmPassword")
         email = data.get("email")
         if password != confirmPassword:
-            raise serializers.ValidationError("Not match password and Confirm password")
+            raise serializers.ValidationError(
+                "Not match password and Confirm password"
+            )
         if User.objects.filter(email=email, password=password).exists():
             raise serializers.ValidationError("User is exists")
         return data
@@ -135,12 +141,13 @@ class ResendVerifySerializer(serializers.Serializer):
         user = get_object_or_404(User, email=email)
         if user.is_verified:
             raise serializers.ValidationError(
-                {"detail": "Dear user your account is verified"}, code="ResendVerify"
+                {"detail": "Dear user your account is verified"},
+                code="ResendVerify",
             )
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    User_id=serializers.CharField(read_only=True)
+    User_id = serializers.CharField(read_only=True)
 
     class Meta:
         model = UserDetail
@@ -167,10 +174,13 @@ class ChangePasswordSerializer(serializers.Serializer):
         confirmpassword = data.get("ConfirmPassword")
 
         if not user.check_password(oldpassword):
-            raise serializers.ValidationError("wrong Password", code="wrong password")
+            raise serializers.ValidationError(
+                "wrong Password", code="wrong password"
+            )
         if newpassword != confirmpassword:
             raise serializers.ValidationError(
-                "Not match NewPassword and ConfirmPassword", code="ChangePassword"
+                "Not match NewPassword and ConfirmPassword",
+                code="ChangePassword",
             )
         try:
             passvalidate.validate_password(password=newpassword, user=user)
@@ -197,6 +207,8 @@ class ResetPasswordSerializer(serializers.Serializer):
         try:
             validate_password(password, user=user)
         except ValidationError as e:
-            raise ValidationError({"detail": list(e.messages)}, code="Short_password")
+            raise ValidationError(
+                {"detail": list(e.messages)}, code="Short_password"
+            )
 
         return data
