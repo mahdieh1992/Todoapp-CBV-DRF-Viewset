@@ -20,7 +20,6 @@ def created_user():
     return user
 
 
-
 @pytest.fixture
 def force_login(api_client, created_user):
     user = created_user
