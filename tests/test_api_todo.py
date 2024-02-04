@@ -61,14 +61,14 @@ class TestApiTodo:
             "Completed": True,
         }
         url = reverse(
-            'Todo:TodoApi:TodoDetail', kwargs={"pk": created_todo.pk}
+            "Todo:TodoApi:TodoDetail", kwargs={"pk": created_todo.pk}
         )
         response = api_client.put(url, data)
         assert response.status_code == 200
 
     def test_api_todo_delete(self, api_client, created_todo):
         url = reverse(
-            'Todo:TodoApi:TodoDetail', kwargs={"pk": created_todo.pk}
+            "Todo:TodoApi:TodoDetail", kwargs={"pk": created_todo.pk}
         )
         response = api_client.delete(url)
         assert response.status_code == 204
