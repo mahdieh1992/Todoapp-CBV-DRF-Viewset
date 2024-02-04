@@ -17,8 +17,8 @@ def created_user():
     user = usermodel.objects.create_user(
         email="test@gmail.com", password="12345"
     )
-    yield user
-    print("user create is sucssesfuly")
+    return user
+
 
 
 @pytest.fixture
