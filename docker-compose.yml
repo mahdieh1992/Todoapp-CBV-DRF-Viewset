@@ -32,5 +32,5 @@ services:
       - ServerOptions__HostName=smtp4dev
 
 volumes:
-      postgres_data:
       smtp4dev-data:
+      postgres_data:
