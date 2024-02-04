@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Django-todo-test
 
 on:
   push:
@@ -17,4 +17,4 @@ jobs:
     - name: setup docker
       run: docker-compose up -d
     - name: Run test
-      run: docker-compose exec -T web sh -c "flake8 ."
+      run: docker-compose exec -T web sh -c "flake8 . & pytest ."
