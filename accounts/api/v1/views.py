@@ -2,6 +2,7 @@ from rest_framework.generics import (
     RetrieveUpdateAPIView,
     GenericAPIView,
 )
+from .task import send_email
 
 from Core import settings
 from .serializer import (
@@ -71,8 +72,9 @@ class RegistrationGAPIView(GenericAPIView):
                 [email],
             )
             # send email with threading for increase speed
-            email_object = EmailThreading(emailuser)
-            email_object.start()
+            email_object = send_email(emailuser)
+            email_object.delay()
+
             return Response(
                 "Register user is successfully "
                 "so for finally register we send a code for user",
