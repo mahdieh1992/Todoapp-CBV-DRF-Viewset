@@ -12,6 +12,21 @@ services:
       - .:/code
     depends_on:
       - db
+      - redis
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 60 1 --loglevel warning
+
+  worker:
+    build: .
+    command: celery -A Core worker -l INFO
+    depends_on:
+      - redis
+      - web
+
   db:
     image: postgres:13
     volumes:
@@ -30,6 +45,19 @@ services:
       - smtp4dev-data:/smtp4dev
     environment:
       - ServerOptions__HostName=smtp4dev
+#  master:
+#    image: locustio/locust
+#    ports:
+#      - "8089:8089"
+#    volumes:
+#      - ./locust:/mnt/locust
+#    command: -f /mnt/locust/locustfile.py --master -H http://web:8089
+
+#  worker:
+#    image: locustio/locust
+#    volumes:
+#      - ./locust:/mnt/locust
+#    command: -f /mnt/locust/locustfile.py --worker --master-host master
 
 volumes:
       postgres_data:

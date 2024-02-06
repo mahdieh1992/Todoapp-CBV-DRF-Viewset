@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
@@ -44,7 +45,9 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'mail_templated',
-    'djoser'
+    'djoser',
+    'locust',
+    'celery'
 ]
 
 MIDDLEWARE = [
@@ -142,7 +145,6 @@ REST_FRAMEWORK = {
 }
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email configuration
@@ -153,3 +155,5 @@ EMAIL_USE_TLS = False
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 
+# celery configuration
+CELERY_BROKER_URL = 'redis://redis:6379/1'
