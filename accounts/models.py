@@ -29,7 +29,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserDetail(models.Model):
-    User_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='UserDetail')
+    User_id = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="UserDetail"
+    )
     FirstName = models.CharField(_("First_name"), max_length=250)
     LastName = models.CharField(_("Last_name"), max_length=250)
     Gender = models.BooleanField(default=False)
@@ -37,7 +39,7 @@ class UserDetail(models.Model):
     Mobile = models.CharField(max_length=11)
 
     def __str__(self):
-        return f"{self.User_id}"
+        return f"{self.User_id.email} "
 
 
 @receiver(post_save, sender=User)

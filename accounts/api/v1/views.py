@@ -1,9 +1,9 @@
-from rest_framework.generics import RetrieveUpdateAPIView, UpdateAPIView, GenericAPIView
-
+from rest_framework.generics import RetrieveUpdateAPIView, GenericAPIView
 from Core import settings
 from .serializer import Loginserializer, RegisterSerializer, ProfileSerializer, ChangePasswordSerializer, \
     SendResetPasswordSerializer, ResendVerifySerializer, ResetPasswordSerializer
-from ...models import User, UserDetail
+from accounts.tasks import send_email
+from ...models import UserDetail
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework import status
@@ -51,13 +51,10 @@ class RegistrationGAPIView(GenericAPIView):
             # create token for user registerd
             tokecreate = get_tokens_for_user(user_obj)
             # send email contain token to new userr
-            emailuser = EmailMessage('email/Confirm.tp1', {'token': tokecreate}, 'mohamadimahdieh70@gmil.com',
-                                     [email])
             # send email with threading for increase speed
-            email_object = EmailThreading(emailuser)
-            email_object.start()
-            return Response('Register user is successfully so for  finally register we sended a code for user',
-                            status=status.HTTP_200_OK)
+            send_email.delay('email/Confirm.tp1', {'token': tokecreate}, 'mohamadimahdieh70@gmil.com',
+                                     [email])
+            return Response('we sending email contain token',status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
