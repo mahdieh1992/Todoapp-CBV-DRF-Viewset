@@ -35,28 +35,27 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'accounts',
-    'Todo',
-    'rest_framework',
-    'django_filters',
-    'drf_yasg',
-    'rest_framework.authtoken',
-    'rest_framework_simplejwt',
-    'mail_templated',
-    'djoser',
-    'locust',
-    'celery'
-    "faker",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "accounts",
+    "Todo",
+    "rest_framework",
+    "django_filters",
+    "drf_yasg",
+    "rest_framework.authtoken",
+    "rest_framework_simplejwt",
+    "mail_templated",
+    "djoser",
+    "locust",
+    "celery" "faker",
     "celery",
-    'django_celery_beat',
-    'django_redis',
-    'django_celery_results'
+    "django_celery_beat",
+    "django_redis",
+    "django_celery_results",
 ]
 
 MIDDLEWARE = [
@@ -163,14 +162,14 @@ EMAIL_USE_TLS = False
 EMAIL_HOST_USER = ""
 EMAIL_HOST_PASSWORD = ""
 
-#celery configuration
+# celery configuration
 
-CELERY_BROKER_URL = 'redis://redis:6379/2'
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_BROKER_URL = "redis://redis:6379/2"
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_CACHE_BACKEND = "django-cache"
 # CELERY_RESULT_BACKEND = 'redis://redis:6379/2'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 DJANGO_CELERY_BEAT_TZ_AWARE = False
 
 # CELERY_BEAT_SCHEDULE={
@@ -187,7 +186,6 @@ CACHES = {
         "LOCATION": "redis://redis:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+        },
     }
 }
-
