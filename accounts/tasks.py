@@ -4,6 +4,7 @@ from mail_templated import EmailMessage
 from Todo.models import Todo
 from django_celery_results.models import TaskResult
 
+
 @shared_task()
 def send_email(template_name, *args, **kwargs):
     time.sleep(20)
@@ -19,13 +20,16 @@ def count_Todo():
 @shared_task()
 def send_email_task(template_name=None, *args, **kwargs):
     time.sleep(20)
-    Email = EmailMessage('email/hello.tp1', {'token': 'mahdieh'}, 'mohamadimahdieh70@gmil.com',
-                         ['ebrahimi.7diamonds@gmail.com'])
+    Email = EmailMessage(
+        "email/hello.tp1",
+        {"token": "mahdieh"},
+        "mohamadimahdieh70@gmil.com",
+        ["ebrahimi.7diamonds@gmail.com"],
+    )
     Email.send()
 
 
 @shared_task()
 def delete_success_task():
-    task_object=TaskResult.objects.all()
-    task_object.filter(status='SUCCESS').delete()
-
+    task_object = TaskResult.objects.all()
+    task_object.filter(status="SUCCESS").delete()
