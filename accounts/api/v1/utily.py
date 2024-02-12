@@ -1,5 +1,6 @@
 import threading
-import time
+
+
 class EmailThreading(threading.Thread):
     def __init__(self, Email):
         super().__init__()
