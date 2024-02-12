@@ -1,5 +1,3 @@
-import requests
-
 from .serializer import TodoSerializer, CitySerializer
 from ...models import Todo
 from rest_framework import viewsets, generics
@@ -66,7 +64,7 @@ class TodoDetailGenericViewSet(generics.RetrieveUpdateDestroyAPIView):
 class WeatherApiView(generics.GenericAPIView):
     serializer_class = CitySerializer
 
-    @method_decorator(cache_page(60))
+    @method_decorator(cache_page(60*20))
     @method_decorator(vary_on_cookie)
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
