@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from .views import TodoListModelViewSet, TodoDetailGenericViewSet
+from .views import TodoListModelViewSet, TodoDetailGenericViewSet,WeatherApiView
 
 
 app_name = "TodoApi"
@@ -13,7 +13,8 @@ urlpatterns = [
         "TodoDetail/<int:pk>",
         TodoDetailGenericViewSet.as_view(),
         name="TodoDetail",
-    )
+    ),
+    path("Weather/",WeatherApiView.as_view(),name="Weather")
 ]
 
 urlpatterns += router.urls

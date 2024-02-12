@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 import os
-
+import celery
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from celery.schedules import crontab
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
@@ -49,6 +52,10 @@ INSTALLED_APPS = [
     "mail_templated",
     "djoser",
     "faker",
+    "celery",
+    'django_celery_beat',
+    'django_redis',
+    'django_celery_results'
 ]
 
 MIDDLEWARE = [
@@ -156,3 +163,34 @@ EMAIL_PORT = 25
 EMAIL_USE_TLS = False
 EMAIL_HOST_USER = ""
 EMAIL_HOST_PASSWORD = ""
+
+#celery configuration
+
+CELERY_BROKER_URL = 'redis://redis:6379/2'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'
+# CELERY_RESULT_BACKEND = 'redis://redis:6379/2'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+DJANGO_CELERY_BEAT_TZ_AWARE = False
+
+# CELERY_BEAT_SCHEDULE={
+#     'delete_success_task':{
+#         'task': 'accounts.api.v1.tasks.delete_success_task',
+#         'schedule': crontab(minute='*/10')
+# }
+# }
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+

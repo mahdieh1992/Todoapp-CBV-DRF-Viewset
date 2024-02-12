@@ -1,4 +1,6 @@
-from .serializer import TodoSerializer
+import requests
+
+from .serializer import TodoSerializer, CitySerializer
 from ...models import Todo
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
@@ -6,6 +8,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from .pagination import TodolistPage
+from rest_framework import status
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie, vary_on_headers
 
 
 class TodoListModelViewSet(viewsets.ModelViewSet):
@@ -55,3 +61,27 @@ class TodoDetailGenericViewSet(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)
         return queryset
+
+
+class WeatherApiView(generics.GenericAPIView):
+    serializer_class = CitySerializer
+
+    @method_decorator(cache_page(60))
+    @method_decorator(vary_on_cookie)
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            city=serializer.data.get('cityname')
+            city_weather = serializer.validated_data['city_weather']
+            weather = {
+                'city': city,
+                'temperature': str(city_weather['main']['temp']),
+                'description': str(city_weather['weather'][0]['description']),
+                'icon': str(city_weather['weather'][0]['icon']),
+                'temperature_max': str(city_weather['main']['temp_max']),
+                'temperature_min': str(city_weather['main']['temp_min']),
+                'feelslike_weather': str(city_weather['main']['feels_like'])
+
+            }
+            return Response(weather,status=status.HTTP_200_OK)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
